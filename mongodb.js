@@ -5,7 +5,7 @@
 // const ObjectId = mongodb.ObjectId
 
 const {MongoClient, ObjectId}= require('mongodb')
-// MongoClient will gice access to connect our function
+// MongoClient will give access to connect our function
 // to the database.
 const connectionUrl = 'mongodb://127.0.0.1:27017'
 const databaseName = 'task-manager'

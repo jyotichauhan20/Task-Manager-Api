@@ -3,18 +3,11 @@ const User = require('../models/user')
 const router = new express.Router()
 const auth = require('../middleware/auth')
 
-// router.get('/test',(req,res)=>{
-//     res.send('This is from new rout')
-// })
 
 router.get('/users/me',auth, async (req, res)=>{
     res.send(req.user)
     
 })
-
-
-
-
 
 router.post('/users',async(req, res)=>{
     const user = new User(req.body)
@@ -85,10 +78,6 @@ router.patch('/users/me', auth, async(req, res)=>{
 
 router.delete('/users/me',auth, async (req, res)=>{
     try{
-        // const user = await User.findByIdAndDelete(req.user._id)
-        // if(!user){
-        //     res.status(404).send()
-        // }
         await req.user.remove()
         res.send(req.user)
 
