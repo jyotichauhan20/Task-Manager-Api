@@ -6,44 +6,29 @@ const app = express()
 const port = process.env.PORT || 3000
 const userRouter = require('./src/routers/user')
 const taskRouter = require('./src/routers/task')
-
-// const port = 3000
-
-// app.use((req,res,next)=>{
-//     if(req.method=='GET'){
-//         res.send('GET/ resquest are disable')
-//     }else{
-//         next()
-//     }
-// })
-
-// app.use((req,res,next)=>{
-//     res.status(503).send('Site is currently down. check back soon')
-// })
-
 app.use(express.json())
 app.use(userRouter)
 app.use(taskRouter)
 
-app.listen(port,()=>{
-    console.log(`Server is on :${port}`)
+const multer = require('multer')
+const upload =  multer({
+    dest:'images',
+    limits:{
+        fieldSize:1000000
+    },
+    fileFilter(req, file, cb){
+        if(!file.originalname.match(/\.(doc|docx)$/)){
+            return cb(new Error('Please upload a word document!'))
+        }
+        cb(undefined, true)
+    }
 })
 
-const Task = require('./src/models/task')
-const User = require('./src/models/user')
-
-const main = async ()=>{
-    // const task = await Task.findById("624861f99d5e96ae2a0ca851")
-    // await task.populate('owner').execPopulate()
-    // console.log(task.owner)
-
-    const user = await User.findById('6246b17b9e1253053d4ba3b5')
-    // await user.populate('tasks').execPopulate()
-    // console.log(user.tasks)
-
-}
-main()
-
+app.post('/upload',upload.single('upload'),(req,res)=>{
+    res.send()
+},(error, req, res, next)=>{
+    res.status(400).send({error:error.message})
+})
 
 const bcrypt = require('bcryptjs')
 const myAsyncFunction =  async()=>{
@@ -56,7 +41,6 @@ const myAsyncFunction =  async()=>{
 
     const isMatch = await bcrypt.compare('Red12345!',hashedPassword)
     // console.log(isMatch)
-
 }
 myAsyncFunction()
 
@@ -67,8 +51,12 @@ const myFunction = async ()=>{
 
     const data = jwt.verify(token , "thisismynewcourse")
     // console.log(data)
-
 }
 myFunction()
+
+app.listen(port,()=>{
+    console.log(`Server is on :${port}`)
+})
+
 
 

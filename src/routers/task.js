@@ -4,13 +4,22 @@ const auth = require('../middleware/auth')
 const router = new express.Router()
 
 router.get('/tasks' ,auth, async (req, res)=>{
+    const match = {}
+    let  pageData = req.query;
+
+    if (req.query.completed){
+        match.completed = req.query.completed === 'true'
+    }
+    if (!pageData.page) {
+        pageData.page = 1;
+    }
     try{
-        const tasks = await Task.find({owner:req.user._id})
-        res.send(tasks)
+        const task = await Task.find(match).skip((parseInt(pageData.page) -1 ) * parseInt(pageData.limit)).limit(parseInt(pageData.limit)).sort({createdAt:-1})
+        res.send(task)
+        
     }catch(e){
         res.status(500).send(e)
     }
-    
 })
 
 router.get('/tasks/:id' ,auth, async(req, res)=>{
@@ -42,7 +51,7 @@ router.post('/tasks',auth,async(req, res)=>{
 
 router.patch('/tasks/:id' ,auth,  async(req, res)=>{
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['description','complated']
+    const allowedUpdates = ['description','completed']
     const isValidOperation = updates.every((update)=>allowedUpdates.includes(update))
     if(!isValidOperation){
         res.status(404).send({error:"Invalid update"})
