@@ -93,7 +93,7 @@ const upload = multer({
         fileSize:1000000
     },
     fileFilter(req, file, cb){
-        if(!file.originalname.match(/\.(doc|docx)$/)){
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
             return cb(new Error('Please upload a word document!'))
         }
         cb(undefined, true)
@@ -103,7 +103,7 @@ router.post('/users/me/avatar',auth,upload.single('avatar'),async (req, res)=>{
     const buffer = await sharp(req.file.buffer).resize({width:250,height:250}).png().toBuffer()
     req.user.avatar = buffer
     await req.user.save()
-    res.send()
+    res.send(req.user)
 },(error, req, res, next)=>{
     res.status(400).send({error:error.message})
 })
